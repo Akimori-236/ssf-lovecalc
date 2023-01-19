@@ -35,7 +35,7 @@ public class LoveService {
         LoveResult lr = LoveResult.create(resp.getBody());
         System.out.println(lr);
         if(lr != null)
-            return Optional.of(lr);                        
+            return Optional.of(lr);
         return Optional.empty();
     }
 
