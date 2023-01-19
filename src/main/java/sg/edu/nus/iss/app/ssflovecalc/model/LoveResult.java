@@ -96,4 +96,10 @@ public class LoveResult {
         }
         return lr;
     }
+
+    @Override
+    public String toString() {
+        return "Object - " + this.id;
+    }
+
 }

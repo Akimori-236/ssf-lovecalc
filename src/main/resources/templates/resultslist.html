@@ -20,7 +20,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr data-th-each="result,iterationStatus : ${resultslist}">
+                    <tr data-th-each="result,iterationStatus : ${results}">
                         <th scope="row" data-th-text="${iterationStatus.count}"></th>
                         <td data-th-text="${result.fname}"></td>
                         <td data-th-text="${result.sname}"></td>

@@ -12,18 +12,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletResponse;
 import sg.edu.nus.iss.app.ssflovecalc.model.LoveResult;
-import sg.edu.nus.iss.app.ssflovecalc.repository.LoveResultsRepo;
 import sg.edu.nus.iss.app.ssflovecalc.service.LoveService;
 
 @Controller
 @RequestMapping(path = "/lovecalc")
-public class CalcController {
+public class LoveController {
 
     @Autowired
     private LoveService loveSvc;
-
-    @Autowired
-    private LoveResultsRepo resultsRepo;
 
     @GetMapping
     public String calculate(@RequestParam(required = true) String fname, @RequestParam(required = true) String sname,
@@ -38,7 +34,8 @@ public class CalcController {
 
     @GetMapping(path="/results")
     public String getList(Model model) {
-        List<LoveResult> results = resultsRepo.getAllResults(0);
+        List<LoveResult> results = loveSvc.getAllResults(0);
+        System.out.println(results.get(0));
         model.addAttribute("results", results);
         return "resultslist";
     }

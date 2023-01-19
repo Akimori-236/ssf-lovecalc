@@ -1,8 +1,10 @@
 package sg.edu.nus.iss.app.ssflovecalc.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import sg.edu.nus.iss.app.ssflovecalc.model.LoveResult;
+import sg.edu.nus.iss.app.ssflovecalc.repository.LoveResultsRepo;
 
 @Service
 public class LoveService {
@@ -19,6 +22,9 @@ public class LoveService {
     // private static final String apiKey =
     // System.getenv("OPEN_WEATHER_MAP_API_KEY");
     private static final String apiKey = "05ab966dd7mshc7ebbedf6f1c5e6p1e8949jsnc03936a8d5f0";
+
+    @Autowired
+    private LoveResultsRepo resultsRepo;
 
     public Optional<LoveResult> getCalculation(String fname, String sname) throws IOException {
 
@@ -36,8 +42,10 @@ public class LoveService {
 
         LoveResult lr = LoveResult.create(resp.getBody());
         System.out.println("Created object >>> " + lr);
-        if (lr != null)
+        if (lr != null) {
+            resultsRepo.saveResult(lr);
             return Optional.of(lr);
+        }
         return Optional.empty();
     }
 
@@ -54,5 +62,9 @@ public class LoveService {
         // Execute the method writing your HttpEntity to the request
         ResponseEntity<String> response = restTemplate.exchange(UrlString, HttpMethod.GET, entity, String.class);
         return response;
+    }
+
+    public List<LoveResult> getAllResults(int startIndex) {
+        return resultsRepo.getAllResults(startIndex);
     }
 }
