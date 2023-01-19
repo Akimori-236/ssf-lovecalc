@@ -86,7 +86,7 @@ public class LoveResult {
             JsonObject jObj = jReader.readObject();
             lr.setFname(jObj.getString("fname"));
             lr.setSname(jObj.getString("sname"));
-            lr.setPercentage(jObj.getJsonNumber("percentage"));
+            lr.setPercentage(Integer.parseInt(jObj.getString("percentage")));
             lr.setResultMsg(jObj.getString("result"));
             if (lr.getPercentage() >= 75) {
                 lr.setCompatible(true);
@@ -101,5 +101,4 @@ public class LoveResult {
     public String toString() {
         return "Object - " + this.id;
     }
-
 }
