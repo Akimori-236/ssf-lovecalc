@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Love Calculator Results</title>
+        <style>
+            .compatible {
+                background-color: lightcoral;
+            }
+            .notcompatible {
+                background-color: dimgray;
+            }
+        </style>
+    </head>
+    <body
+        data-th-object="${loveresult}"
+        data-th-classappend="*{compatible} ? compatible : notcompatible"
+    >
+        <div class="container">
+            <h1>RESULTS</h1>
+            <p>
+                For <span data-th-text="*{fname}"></span> and
+                <span data-th-text="*{sname}"></span>
+            </p>
+            <p>Compatibility: <span data-th-text="*{percentage}"></span>%</p>
+
+            <p data-th-text="*{resultMsg}"></p>
+        </div>
+    </body>
+</html>
