@@ -17,7 +17,7 @@ public class LoveResultsRepo {
 
     public void saveResult(final LoveResult lr) {
         redisTemplate.opsForList()
-                .leftPush(RESULTS_ENTITY, lr.getId());
+                .rightPush(RESULTS_ENTITY, lr.getId());
         redisTemplate.opsForHash()
                 .put(RESULTS_ENTITY + "_Map", lr.getId(), lr);
     }
@@ -25,7 +25,7 @@ public class LoveResultsRepo {
     public List<LoveResult> getAllResults(int startIndex) {
         List<Object> fromRedisResultsList = redisTemplate.opsForList()
                 .range(RESULTS_ENTITY, startIndex, 10);
-        // read from redis' list and cast the items back into LoveResult Objects
+        // read from redis' list, check if its  the correct type and cast the items back into LoveResult Objects
         List<LoveResult> resultsList = redisTemplate.opsForHash()
                 .multiGet(RESULTS_ENTITY + "_Map", fromRedisResultsList)
                 .stream()
