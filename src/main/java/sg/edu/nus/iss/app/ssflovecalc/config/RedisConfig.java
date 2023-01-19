@@ -1,6 +1,7 @@
 package sg.edu.nus.iss.app.ssflovecalc.config;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,9 +11,16 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.SerializationException;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 
 @Configuration
 public class RedisConfig {
@@ -33,7 +41,8 @@ public class RedisConfig {
     @Value("${spring.redis.password}")
     private String redisPassword;
 
-    // define the return redis template bean as single Object throughout the runtime.
+    // define the return redis template bean as single Object throughout the
+    // runtime.
     // Return the RedisTemplate
     @Bean
     @Scope("singleton")
@@ -66,16 +75,49 @@ public class RedisConfig {
         // SET KEY TYPES
         redisTemplate.setKeySerializer(new StringRedisSerializer()); // this is by default
         // set the map key/value serialization type to String
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        
+        redisTemplate.setHashKeySerializer(redisTemplate.getKeySerializer());
+
         // enable redis to store java object on the value column
         // converts object into byte array for transfer & storage and back
         // ClassLoader avoids class loading issues (not included by default)
-        RedisSerializer<Object> objSerializer = new JdkSerializationRedisSerializer(getClass().getClassLoader());
+        // RedisSerializer<Object> objSerializer = new
+        // JdkSerializationRedisSerializer(getClass().getClassLoader());
         // SET VALUE TYPES
-        redisTemplate.setValueSerializer(objSerializer);
-        redisTemplate.setHashValueSerializer(objSerializer);
+        redisTemplate.setValueSerializer(new JsonRedisSerializer());
+        redisTemplate.setHashValueSerializer(new JsonRedisSerializer());
 
         return redisTemplate;
+    }
+
+    static class JsonRedisSerializer implements RedisSerializer<Object> {
+
+        private final ObjectMapper om;
+
+        public JsonRedisSerializer() {
+            this.om = new ObjectMapper().activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
+                    ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        }
+
+        @Override
+        public byte[] serialize(Object t) throws SerializationException {
+            try {
+                return om.writeValueAsBytes(t);
+            } catch (JsonProcessingException e) {
+                throw new SerializationException(e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public Object deserialize(byte[] bytes) throws SerializationException {
+
+            if (bytes == null) {
+                return null;
+            }
+            try {
+                return om.readValue(bytes, Object.class);
+            } catch (Exception e) {
+                throw new SerializationException(e.getMessage(), e);
+            }
+        }
     }
 }
