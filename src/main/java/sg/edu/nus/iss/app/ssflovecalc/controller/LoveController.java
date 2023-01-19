@@ -28,6 +28,7 @@ public class LoveController {
         LoveResult lr = loveSvc.getCalculation(fname, sname).get();
         if (lr.getPercentage() == 0) {
             response.sendError(418);
+            return "teapot";
         }
         model.addAttribute("loveresult", lr);
         return "loveresult";
