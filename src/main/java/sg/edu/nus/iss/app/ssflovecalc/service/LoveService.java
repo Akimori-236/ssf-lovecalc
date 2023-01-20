@@ -19,9 +19,7 @@ import sg.edu.nus.iss.app.ssflovecalc.repository.LoveResultsRepo;
 @Service
 public class LoveService {
     private static final String LOVE_CALC_URL = "https://love-calculator.p.rapidapi.com/getPercentage";
-    // private static final String apiKey =
-    // System.getenv("OPEN_WEATHER_MAP_API_KEY");
-    private static final String apiKey = "05ab966dd7mshc7ebbedf6f1c5e6p1e8949jsnc03936a8d5f0";
+
 
     @Autowired
     private LoveResultsRepo resultsRepo;
@@ -54,6 +52,7 @@ public class LoveService {
         RestTemplate restTemplate = new RestTemplate();
         // set headers for GET request
         final HttpHeaders headers = new HttpHeaders();
+            String apiKey = System.getenv("${LOVER_API_KEY}");
         headers.set("X-RapidAPI-Key", apiKey);
         headers.set("X-RapidAPI-Host", "love-calculator.p.rapidapi.com");
 
