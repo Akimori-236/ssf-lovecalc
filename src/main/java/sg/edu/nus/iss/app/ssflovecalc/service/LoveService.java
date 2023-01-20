@@ -38,8 +38,9 @@ public class LoveService {
                 .toUriString();
         System.out.println("URL >>> " + calculatorUrl);
 
-        ResponseEntity<String> resp = testHeader(calculatorUrl);
-
+        // get GET response entity
+        ResponseEntity<String> resp = getResponse(calculatorUrl);
+        // get body from GET response
         LoveResult lr = LoveResult.create(resp.getBody());
         System.out.println("Created object >>> " + lr);
         if (lr != null) {
@@ -49,16 +50,15 @@ public class LoveService {
         return Optional.empty();
     }
 
-    public ResponseEntity<String> testHeader(String UrlString) {
+    public ResponseEntity<String> getResponse(String UrlString) {
         RestTemplate restTemplate = new RestTemplate();
-        // Set the headers you need send
+        // set headers for GET request
         final HttpHeaders headers = new HttpHeaders();
         headers.set("X-RapidAPI-Key", apiKey);
         headers.set("X-RapidAPI-Host", "love-calculator.p.rapidapi.com");
 
-        // Create a new HttpEntity
+        // create the GET request HTTP Entity with the desired headers
         final HttpEntity<String> entity = new HttpEntity<String>(headers);
-
         // Execute the method writing your HttpEntity to the request
         ResponseEntity<String> response = restTemplate.exchange(UrlString, HttpMethod.GET, entity, String.class);
         return response;
